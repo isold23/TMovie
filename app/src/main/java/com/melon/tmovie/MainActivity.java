@@ -1,36 +1,52 @@
 package com.melon.tmovie;
 
 
+import android.content.res.Configuration;
 import android.os.Build;
+import android.view.View;
+import android.content.pm.ActivityInfo;
+import android.view.WindowManager;
 import android.webkit.*;
+import android.widget.FrameLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 
 
 public class MainActivity extends AppCompatActivity {
+    private FrameLayout mFrameLayout;
+    private WebView mWebView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        WebView webView = findViewById(R.id.webview);
+        mWebView = findViewById(R.id.webview);
+        mFrameLayout = findViewById(R.id.mFrameLayout);
 
-        webView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setJavaScriptEnabled(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            webView.getSettings().setSafeBrowsingEnabled(false);
+            mWebView.getSettings().setSafeBrowsingEnabled(false);
         }
 
-        webView.getSettings().setAllowFileAccess(true);
+        mWebView.getSettings().setAllowFileAccess(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            webView.getSettings().setAllowFileAccessFromFileURLs(true);
+            mWebView.getSettings().setAllowFileAccessFromFileURLs(true);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            webView.getSettings().setAllowUniversalAccessFromFileURLs(true);
+            mWebView.getSettings().setAllowUniversalAccessFromFileURLs(true);
         }
 
-        webView.setWebViewClient(new WebViewClient() {
+        mWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        mWebView.getSettings().setPluginState(WebSettings.PluginState.ON);
+        mWebView.getSettings().setLoadWithOverviewMode(true);
+        mWebView.getSettings().setUseWideViewPort(true);
+        mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        mWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+
+        mWebView.setWebViewClient(new WebViewClient() {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -49,16 +65,94 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return response;
             }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+            }
         });
 
-        webView.setWebChromeClient(new WebChromeClient() {
+        mWebView.setWebChromeClient(new WebChromeClient() {
+            private View mCustomView;
+            private CustomViewCallback mCustomViewCallback;
+
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
                 //Log.d("WebView", consoleMessage.message());
                 return true;
             }
+
+            @Override
+            public void onShowCustomView(View view, CustomViewCallback callback) {
+                super.onShowCustomView(view, callback);
+                if (mCustomView != null) {
+                    callback.onCustomViewHidden();
+                    return;
+                }
+                mCustomView = view;
+                mFrameLayout.addView(mCustomView);
+                mCustomViewCallback = callback;
+                mWebView.setVisibility(View.GONE);
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            }
+
+            public void onHideCustomView() {
+                mWebView.setVisibility(View.VISIBLE);
+                if (mCustomView == null) {
+                    return;
+                }
+                mCustomView.setVisibility(View.GONE);
+                mFrameLayout.removeView(mCustomView);
+                mCustomViewCallback.onCustomViewHidden();
+                mCustomView = null;
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                super.onHideCustomView();
+            }
         });
 
-        webView.loadUrl("http://tv.hzdianyue.com");
+        mWebView.loadUrl("http://tv.hzdianyue.com");
     }
+
+    @Override
+    public void onConfigurationChanged(@NotNull Configuration config) {
+        super.onConfigurationChanged(config);
+        switch (config.orientation) {
+            case Configuration.ORIENTATION_LANDSCAPE:
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                break;
+            case Configuration.ORIENTATION_PORTRAIT:
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+                break;
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mWebView.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mWebView.onResume();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mWebView.canGoBack()) {
+            mWebView.goBack();
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mWebView.destroy();
+    }
+
 }
