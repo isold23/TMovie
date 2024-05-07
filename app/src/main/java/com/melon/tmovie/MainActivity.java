@@ -1,10 +1,12 @@
 package com.melon.tmovie;
 
 
+import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Handler;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.content.pm.ActivityInfo;
 import android.view.WindowManager;
@@ -135,6 +137,29 @@ public class MainActivity extends AppCompatActivity {
                 super.onHideCustomView();
             }
         });
+
+
+//        mWebView.setOnTouchListener(new View.OnTouchListener() {
+//            private float startX;
+//
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                switch (event.getAction()) {
+//                    case MotionEvent.ACTION_DOWN:
+//                        startX = event.getX();
+//                        break;
+//                    case MotionEvent.ACTION_UP:
+//                        float endX = event.getX();
+//                        if (endX - startX > 100) {
+//                            mWebView.goBack();
+//                        } else if (startX - endX > 100) {
+//                            mWebView.goForward();
+//                        }
+//                        break;
+//                }
+//                return false;
+//            }
+//        });
 
         mWebView.loadUrl("http://tv.hzdianyue.com/");
 
