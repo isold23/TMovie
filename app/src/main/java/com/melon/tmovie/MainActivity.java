@@ -3,16 +3,20 @@ package com.melon.tmovie;
 
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.View;
 import android.content.pm.ActivityInfo;
 import android.view.WindowManager;
 import android.webkit.*;
 import android.widget.FrameLayout;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -22,6 +26,7 @@ import java.util.Collections;
 public class MainActivity extends AppCompatActivity {
     private FrameLayout mFrameLayout;
     private WebView mWebView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mWebView = findViewById(R.id.webview);
         mFrameLayout = findViewById(R.id.mFrameLayout);
+        mSwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mWebView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
@@ -88,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
 
@@ -130,6 +137,33 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mWebView.loadUrl("http://tv.hzdianyue.com/");
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (mWebView == null) {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    return;
+                }
+                // 在 UI 线程上执行 WebView 刷新
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mWebView.reload();
+                    }
+                });
+            }
+        });
+
+        mSwipeRefreshLayout.setOnChildScrollUpCallback(new SwipeRefreshLayout.OnChildScrollUpCallback() {
+            @Override
+            public boolean canChildScrollUp(@NonNull SwipeRefreshLayout swipeRefreshLayout, @Nullable View view) {
+                // 原生安卓使用getScrollY()来判断在Y轴的距离
+                return mWebView.getScrollY() > 0;
+                //使用的X5内核的webview需要调用getWebScrollY()来判断在Y轴的距离
+                //return mWebView.getWebScrollY() > 0;
+            }
+        });
     }
 
     @Override
@@ -254,4 +288,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    private boolean hasInternetPermission() {
+        return checkSelfPermission(android.Manifest.permission.INTERNET) == getPackageManager().PERMISSION_GRANTED;
+    }
 }
