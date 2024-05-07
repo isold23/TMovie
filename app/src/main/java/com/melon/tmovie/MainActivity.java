@@ -138,28 +138,36 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mWebView.setOnTouchListener(new View.OnTouchListener() {
+            private float startX;
 
-//        mWebView.setOnTouchListener(new View.OnTouchListener() {
-//            private float startX;
-//
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                switch (event.getAction()) {
-//                    case MotionEvent.ACTION_DOWN:
-//                        startX = event.getX();
-//                        break;
-//                    case MotionEvent.ACTION_UP:
-//                        float endX = event.getX();
-//                        if (endX - startX > 100) {
-//                            mWebView.goBack();
-//                        } else if (startX - endX > 100) {
-//                            mWebView.goForward();
-//                        }
-//                        break;
-//                }
-//                return false;
-//            }
-//        });
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        startX = event.getX();
+                        Log.d("view", "MotionEvent.ACTION_DOWN");
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        float endX = event.getX();
+                        Log.d("view", "MotionEvent.ACTION_UP");
+                        if (endX - startX > 100) {
+                            if(mWebView.canGoBack()) {
+                                mWebView.goBack();
+                                Log.d("view", "MotionEvent.goBack");
+                            }
+                        } else if (startX - endX > 100) {
+                            if(mWebView.canGoForward()) {
+                                mWebView.goForward();
+                                Log.d("view", "MotionEvent.goForward");
+                            }
+                        }
+                        break;
+                }
+                return false;
+            }
+        });
+
 
         mWebView.loadUrl("http://tv.hzdianyue.com/");
 
@@ -232,88 +240,82 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         mWebView.destroy();
     }
-
+/*
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event){
         String TAG = "key";
         switch (keyCode) {
             case KeyEvent.KEYCODE_ENTER:     //确定键enter
             case KeyEvent.KEYCODE_DPAD_CENTER:
-                //Log.d(TAG, "enter--->");
+                Log.d(TAG, "enter--->");
                 break;
 
             case KeyEvent.KEYCODE_BACK:    //返回键
-                //Log.d(TAG,"back--->");
+                Log.d(TAG,"back--->");
                 return true;   //这里由于break会退出，所以我们自己要处理掉 不返回上一层
 
             case KeyEvent.KEYCODE_SETTINGS: //设置键
-                //Log.d(TAG, "setting--->");
+                Log.d(TAG, "setting--->");
                 break;
 
             case KeyEvent.KEYCODE_DPAD_DOWN:   //向下键
 
-                /*    实际开发中有时候会触发两次，所以要判断一下按下时触发 ，松开按键时不触发
-                 *    exp:KeyEvent.ACTION_UP
-                 */
                 if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    //Log.d(TAG, "down--->");
+                    Log.d(TAG, "down--->");
                 }
 
                 break;
 
             case KeyEvent.KEYCODE_DPAD_UP:   //向上键
-                //Log.d(TAG, "up--->");
+                Log.d(TAG, "up--->");
 
                 break;
 
             case KeyEvent.KEYCODE_0:   //数字键0
-                //Log.d(TAG, "0--->");
+                Log.d(TAG, "0--->");
 
                 break;
             case KeyEvent.KEYCODE_DPAD_LEFT: //向左键
-                //Log.d(TAG, "left--->");
+                Log.d(TAG, "left--->");
                 break;
 
             case KeyEvent.KEYCODE_DPAD_RIGHT:  //向右键
-                //Log.d(TAG, "right--->");
+                Log.d(TAG, "right--->");
                 break;
 
             case KeyEvent.KEYCODE_INFO:    //info键
-                //Log.d(TAG, "info--->");
+                Log.d(TAG, "info--->");
 
                 break;
 
             case KeyEvent.KEYCODE_PAGE_DOWN:     //向上翻页键
             case KeyEvent.KEYCODE_MEDIA_NEXT:
-                //Log.d(TAG, "page down--->");
+                Log.d(TAG, "page down--->");
                 break;
 
 
             case KeyEvent.KEYCODE_PAGE_UP:     //向下翻页键
             case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                //Log.d(TAG, "page up--->");
+                Log.d(TAG, "page up--->");
 
                 break;
 
             case KeyEvent.KEYCODE_VOLUME_UP:   //调大声音键
-                //Log.d(TAG, "voice up--->");
+                Log.d(TAG, "voice up--->");
 
                 break;
 
             case KeyEvent.KEYCODE_VOLUME_DOWN: //降低声音键
-                //Log.d(TAG, "voice down--->");
+                Log.d(TAG, "voice down--->");
 
                 break;
             case KeyEvent.KEYCODE_VOLUME_MUTE: //禁用声音
-                //Log.d(TAG, "voice mute--->");
+                Log.d(TAG, "voice mute--->");
                 break;
             default:
                 break;
         }
         return super.onKeyDown(keyCode, event);
     }
-
-    private boolean hasInternetPermission() {
-        return checkSelfPermission(android.Manifest.permission.INTERNET) == getPackageManager().PERMISSION_GRANTED;
-    }
+    */
 }
