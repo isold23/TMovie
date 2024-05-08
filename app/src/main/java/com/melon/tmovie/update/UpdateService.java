@@ -1,8 +1,16 @@
 package com.melon.tmovie.update;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+
 public class UpdateService {
     private static OkHttpClient okHttpClient;
-
     public static void download(final String fileName, final UpdateCallback callback) {
         String url = "http://tv.hzdianyue.com/app/" + fileName;
         Request request = new Request.Builder()
@@ -57,11 +65,8 @@ public class UpdateService {
     }
 
     public interface UpdateCallback {
-
         void onSuccess();
-
         void onProgress(int progress);
-
         void onFailure();
     }
 }

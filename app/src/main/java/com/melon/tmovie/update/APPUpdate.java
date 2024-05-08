@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.widget.Toast;
 import androidx.core.content.FileProvider;
 import com.melon.tmovie.config.APPConfig;
+import com.melon.tmovie.dialog.UpdateDialog;
 
 import java.io.File;
 
@@ -22,8 +24,37 @@ public class APPUpdate {
         return appConfig.currentConfigInfo.versionCode < appConfig.latestConfigInfo.versionCode ? true : false;
     }
 
-    public void downloadApk() {
+    public void downloadApk(UpdateDialog dialog) {
+        String fileName = "TMovie.apk";
+        UpdateService.download(fileName, new UpdateService.UpdateCallback() {
+            @Override
+            public void onSuccess() {
+                dialog.downloadProgress.dismiss();
 
+                if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                    return;
+                }
+
+                File file = new File(CommonConstants.DOWNLOAD_PATH + fileName);
+                try {
+                    LoggerUtils.getLogger().info("安装文件目录：" + file);
+                    LoggerUtils.getLogger().info("准备安装");
+                    installApk(file);
+                } catch (Exception e) {
+                    LoggerUtils.getLogger().info("获取打开方式错误", e);
+                }
+            }
+
+            @Override
+            public void onProgress(int progress) {
+                dialog.downloadProgress.setProgress(progress);
+            }
+
+            @Override
+            public void onFailure() {
+                dialog.downloadProgress.dismiss();
+            }
+        });
     }
 
     public void installApk(Context context, String apkPath) {
