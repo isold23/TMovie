@@ -29,6 +29,7 @@ public class APPUpdate {
         }
 
         //File apkFile = new File(apkPath + apkCacheName);
+        File apkFile = new File(apkPath);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         //Android 7.0 系统共享文件需要通过 FileProvider 添加临时权限，否则系统会抛出 FileUriExposedException .
