@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import Callback;
 
 
 public class UpdateService {
@@ -55,7 +56,6 @@ public class UpdateService {
                         callback.onProgress(progress);
                     }
                     fos.flush();
-
                     callback.onSuccess();
                 } catch (Exception e) {
                     callback.onFailure();
