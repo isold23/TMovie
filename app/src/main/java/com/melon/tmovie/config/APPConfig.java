@@ -3,6 +3,7 @@ package com.melon.tmovie.config;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Environment;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -70,6 +71,7 @@ public class APPConfig {
                     0);
             currentConfigInfo.versionName = info.versionName;
             currentConfigInfo.versionCode = info.versionCode;
+            currentConfigInfo.hasSdcard = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
         } catch (Exception e) {
             e.printStackTrace();
         }

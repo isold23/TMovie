@@ -22,7 +22,11 @@ public class APPUpdate {
         return appConfig.currentConfigInfo.versionCode < appConfig.latestConfigInfo.versionCode ? true : false;
     }
 
-    public static void installApk(Context context, String apkPath) {
+    public void downloadApk() {
+
+    }
+
+    public void installApk(Context context, String apkPath) {
         if (TextUtils.isEmpty(apkPath)){
             Toast.makeText(context,"更新失败！未找到安装包", Toast.LENGTH_SHORT).show();
             return;
