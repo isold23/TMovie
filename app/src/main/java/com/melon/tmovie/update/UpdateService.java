@@ -1,5 +1,6 @@
 package com.melon.tmovie.update;
 
+import android.os.Environment;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -35,7 +36,7 @@ public class UpdateService {
                     return;
                 }
 
-                File filePath = new File(CommonConstants.DOWNLOAD_PATH);
+                File filePath = new File(Environment.getExternalStorageDirectory(), fileName);
                 if (!filePath.exists()) {
                     filePath.mkdirs();
                 }
@@ -45,7 +46,7 @@ public class UpdateService {
                 File file = new File(filePath.getCanonicalPath(), fileName);
                 try (InputStream is = response.body().byteStream();
                      FileOutputStream fos = new FileOutputStream(file)) {
-                    LoggerUtils.getLogger().info("保存路径：" + file);
+                    //LoggerUtils.getLogger().info("保存路径：" + file);
 
                     int length;
                     long sum = 0;

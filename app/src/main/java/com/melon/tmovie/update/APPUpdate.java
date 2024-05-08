@@ -35,13 +35,13 @@ public class APPUpdate {
                     return;
                 }
 
-                File file = new File(CommonConstants.DOWNLOAD_PATH + fileName);
+                File file = new File(Environment.getExternalStorageDirectory() + fileName);
                 try {
-                    LoggerUtils.getLogger().info("安装文件目录：" + file);
-                    LoggerUtils.getLogger().info("准备安装");
+                    //LoggerUtils.getLogger().info("安装文件目录：" + file);
+                    //LoggerUtils.getLogger().info("准备安装");
                     installApk(file);
                 } catch (Exception e) {
-                    LoggerUtils.getLogger().info("获取打开方式错误", e);
+                    //LoggerUtils.getLogger().info("获取打开方式错误", e);
                 }
             }
 
