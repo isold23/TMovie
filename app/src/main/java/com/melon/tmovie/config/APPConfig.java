@@ -14,28 +14,40 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.IOException;
 import java.io.StringReader;
 
+/* config xml
+  1 <?xml version="1.0" encoding="UTF-8" ?>
+  2 <config>
+  3   <minVersionCode>0</minVersionCode>
+  4   <versionCode>10</versionCode>
+  5   <versionName>beta</versionName>
+  6   <versionChanglog>增加更新功能</versionChanglog>
+  7 </config>
+ */
+
 public class APPConfig {
     private String config_url = "http://tv.hzdianyue.com/app/config.xml";
-    public ConfigInfo latestConfigInfo;
-    public ConfigInfo currentConfigInfo;
+    public ConfigInfo latestConfigInfo = new ConfigInfo();
+    public ConfigInfo currentConfigInfo = new ConfigInfo();
 
-    public void getLatestConfig() {
-        Thread thread = new Thread(() -> {
-            OkHttpClient okHttpClient = new OkHttpClient();
-            Request request = new Request.Builder()
-                    .url(config_url)
-                    .build();
-            try {
-                Response response = okHttpClient.newCall(request).execute();
-                if(response.body() != null) {
-                    parseAppInfo(response.body().string());
-                }
-                response.close();
-            } catch (IOException | XmlPullParserException e) {
-                e.printStackTrace();
+    public void init(Context context) {
+        getLatestConfig();
+        getCurrentConfig(context);
+    }
+
+    private void getLatestConfig() {
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(config_url)
+                .build();
+        try {
+            Response response = okHttpClient.newCall(request).execute();
+            if (response.body() != null) {
+                parseAppInfo(response.body().string());
             }
-        });
-        thread.start();
+            response.close();
+        } catch (IOException | XmlPullParserException e) {
+            e.printStackTrace();
+        }
     }
 
     private void parseAppInfo(String xmlData) throws XmlPullParserException, IOException {
@@ -47,14 +59,14 @@ public class APPConfig {
             String tagName = parser.getName();
             switch (eventType) {
                 case XmlPullParser.START_TAG:
-                    if("minVersionCode".equals(tagName)) {
+                    if ("minVersionCode".equals(tagName)) {
                         latestConfigInfo.minVersionCode = Integer.parseInt(parser.nextText());
-                    }
-                    if("versionCode".equals(tagName)) {
+                    }else if ("versionCode".equals(tagName)) {
                         latestConfigInfo.versionCode = Integer.parseInt(parser.nextText());
-                    }
-                    if ("versionName".equals(tagName)) {
+                    }else if ("versionName".equals(tagName)) {
                         latestConfigInfo.versionName = parser.nextText();
+                    }else if ("versionChanglog".equals(tagName)) {
+                        latestConfigInfo.updateContent = parser.nextText();
                     }
                     break;
                 case XmlPullParser.END_TAG:
@@ -64,7 +76,7 @@ public class APPConfig {
         }
     }
 
-    public void getCurrentConfig(Context context) {
+    private void getCurrentConfig(Context context) {
         try {
             PackageManager manager = context.getPackageManager();
             PackageInfo info = manager.getPackageInfo(context.getPackageName(),

@@ -1,18 +1,20 @@
 package com.melon.tmovie.update;
 
 import android.os.Environment;
+import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import Callback;
-
 
 public class UpdateService {
     private static OkHttpClient okHttpClient;
+
     public static void download(final String fileName, final UpdateCallback callback) {
         String url = "http://tv.hzdianyue.com/app/" + fileName;
         Request request = new Request.Builder()
@@ -23,20 +25,20 @@ public class UpdateService {
             okHttpClient = new OkHttpClient();
         }
 
-        okHttpClient.newCall(request).enqueue(new Callback() {
+        okHttpClient.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 callback.onFailure();
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.body() == null) {
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
                     callback.onFailure();
                     return;
                 }
 
-                File filePath = new File(Environment.getExternalStorageDirectory(), fileName);
+                File filePath = new File(String.valueOf(Environment.getExternalStorageDirectory()));
                 if (!filePath.exists()) {
                     filePath.mkdirs();
                 }
@@ -46,7 +48,6 @@ public class UpdateService {
                 File file = new File(filePath.getCanonicalPath(), fileName);
                 try (InputStream is = response.body().byteStream();
                      FileOutputStream fos = new FileOutputStream(file)) {
-                    //LoggerUtils.getLogger().info("保存路径：" + file);
 
                     int length;
                     long sum = 0;
@@ -67,7 +68,9 @@ public class UpdateService {
 
     public interface UpdateCallback {
         void onSuccess();
+
         void onProgress(int progress);
+
         void onFailure();
     }
 }

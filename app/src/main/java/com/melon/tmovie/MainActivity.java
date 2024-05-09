@@ -24,11 +24,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 
+import com.melon.tmovie.update.APPUpdate;
+
 
 public class MainActivity extends AppCompatActivity {
     private FrameLayout mFrameLayout;
     private WebView mWebView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private APPUpdate appUpdate = new APPUpdate();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
                 //return mWebView.getWebScrollY() > 0;
             }
         });
+        //appUpdate.update(MainActivity.this);
     }
 
     @Override

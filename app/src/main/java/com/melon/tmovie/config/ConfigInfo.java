@@ -5,5 +5,7 @@ public class ConfigInfo {
     public int versionCode;
     public String versionName;
     public String appMD5;
+    public String updateContent;
     public boolean hasSdcard;
+
 }
