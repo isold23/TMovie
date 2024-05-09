@@ -34,7 +34,7 @@ public class UpdateDialog {
                                 downloadProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                                 downloadProgress.setCanceledOnTouchOutside(false);
                                 downloadProgress.setCancelable(true);
-                                downloadProgress.setTitle("正在下载");
+                                downloadProgress.setTitle("正在下载最新版本");
                                 downloadProgress.setMessage("请稍后...");
                                 downloadProgress.setProgress(0);
                                 downloadProgress.setMax(100);

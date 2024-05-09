@@ -1,6 +1,7 @@
 package com.melon.tmovie.update;
 
 import android.os.Environment;
+import android.util.Log;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -38,9 +39,12 @@ public class UpdateService {
                     return;
                 }
 
-                File filePath = new File(String.valueOf(Environment.getExternalStorageDirectory()));
+                File filePath = new File(String.valueOf(Environment.getExternalStorageDirectory()), "TMovie");
                 if (!filePath.exists()) {
-                    filePath.mkdirs();
+                    if(!filePath.mkdirs()) {
+                        Log.d("update", "create dirs failed."+filePath);
+                        return;
+                    }
                 }
 
                 long contentLength = response.body().contentLength();

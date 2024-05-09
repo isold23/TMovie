@@ -23,7 +23,7 @@
         <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing" android:value="false"/>
         <provider
                 android:name="androidx.core.content.FileProvider"
-                android:authorities="com.melon.tmovie.provider"
+                android:authorities="com.melon.tmovie.update.provider"
                 android:exported="false"
                 android:grantUriPermissions="true">
             <meta-data

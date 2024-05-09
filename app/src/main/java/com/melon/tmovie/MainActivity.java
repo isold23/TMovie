@@ -2,6 +2,7 @@ package com.melon.tmovie;
 
 
 import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Handler;
@@ -18,11 +19,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.core.content.ContextCompat;
+import androidx.core.app.ActivityCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import org.jetbrains.annotations.NotNull;
 
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import com.melon.tmovie.update.APPUpdate;
 
@@ -200,7 +205,8 @@ public class MainActivity extends AppCompatActivity {
                 //return mWebView.getWebScrollY() > 0;
             }
         });
-        //appUpdate.update(MainActivity.this);
+        request_permissions();
+
     }
 
     @Override
@@ -322,4 +328,48 @@ public class MainActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
     */
+
+    private void request_permissions() {
+        // 创建一个权限列表，把需要使用而没用授权的的权限存放在这里
+        List<String> permissionList = new ArrayList<>();
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(android.Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+
+        // 如果列表为空，就是全部权限都获取了，不用再次获取了。不为空就去申请权限
+        if (!permissionList.isEmpty()) {
+            ActivityCompat.requestPermissions(this,
+                    permissionList.toArray(new String[permissionList.size()]), 1002);
+        }
+    }
+    // 请求权限回调方法
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        boolean ret = true;
+        switch (requestCode) {
+            case 1002:
+                // 1002请求码对应的是申请多个权限
+                if (grantResults.length > 0) {
+                    // 因为是多个权限，所以需要一个循环获取每个权限的获取情况
+                    for (int i = 0; i < grantResults.length; i++) {
+                        // PERMISSION_DENIED 这个值代表是没有授权，我们可以把被拒绝授权的权限显示出来
+                        if (grantResults[i] == PackageManager.PERMISSION_DENIED){
+                            ret = false;
+                        }
+                    }
+                }
+                break;
+        }
+        if(ret) {
+            appUpdate.update(MainActivity.this);
+        }
+    }
 }
