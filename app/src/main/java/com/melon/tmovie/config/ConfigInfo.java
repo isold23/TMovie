@@ -7,5 +7,5 @@ public class ConfigInfo {
     public String appMD5;
     public String updateContent;
     public boolean hasSdcard;
-
+    public String apkPath;
 }

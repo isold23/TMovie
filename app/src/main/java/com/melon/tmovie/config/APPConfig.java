@@ -84,6 +84,7 @@ public class APPConfig {
             currentConfigInfo.versionName = info.versionName;
             currentConfigInfo.versionCode = info.versionCode;
             currentConfigInfo.hasSdcard = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

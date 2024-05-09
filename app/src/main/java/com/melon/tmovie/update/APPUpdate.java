@@ -39,12 +39,19 @@ public class APPUpdate {
     private void downloadApk(Context context) {
         String fileName = "TMovie.apk";
         if(!appConfig.currentConfigInfo.hasSdcard) return;
-        UpdateService.download(fileName, new UpdateService.UpdateCallback() {
+        UpdateService.download(context, fileName, new UpdateService.UpdateCallback() {
             @Override
             public void onSuccess() {
                 updateDialog.downloadProgress.dismiss();
                 try {
-                    installApk(context, Environment.getExternalStorageDirectory() + fileName);
+                    File file1 = context.getExternalFilesDir(null);
+                    File filePath = null;
+                    if(file1 != null) {
+                        filePath = new File(file1.getAbsolutePath());
+                    }
+
+                    assert filePath != null;
+                    installApk(context, filePath.getAbsolutePath() + "/" + fileName);
                 } catch (Exception e) {
                     Log.d("update", e.toString());
                 }
@@ -75,7 +82,7 @@ public class APPUpdate {
         //Android 7.0 系统共享文件需要通过 FileProvider 添加临时权限，否则系统会抛出 FileUriExposedException .
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            Uri contentUri = FileProvider.getUriForFile(context, "com.melon.tmovie.update.fileprovider", apkFile);
+            Uri contentUri = FileProvider.getUriForFile(context, "com.melon.tmovie.fileprovider", apkFile);
             intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
         } else {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

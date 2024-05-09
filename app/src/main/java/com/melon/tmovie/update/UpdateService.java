@@ -1,11 +1,10 @@
 package com.melon.tmovie.update;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
-import okhttp3.Call;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import com.melon.tmovie.MainActivity;
+import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -16,7 +15,7 @@ import java.io.InputStream;
 public class UpdateService {
     private static OkHttpClient okHttpClient;
 
-    public static void download(final String fileName, final UpdateCallback callback) {
+    public static void download(Context context, final String fileName, final UpdateCallback callback) {
         String url = "http://tv.hzdianyue.com/app/" + fileName;
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "identity")
@@ -26,7 +25,7 @@ public class UpdateService {
             okHttpClient = new OkHttpClient();
         }
 
-        okHttpClient.newCall(request).enqueue(new okhttp3.Callback() {
+        okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 callback.onFailure();
@@ -39,26 +38,31 @@ public class UpdateService {
                     return;
                 }
 
-                File filePath = new File(String.valueOf(Environment.getExternalStorageDirectory()), "TMovie");
-                if (!filePath.exists()) {
+                //File filePath = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "TMovie");
+                File file1 = context.getExternalFilesDir(null);
+                File filePath = null;
+                if(file1 != null) {
+                    filePath = new File(file1.getAbsolutePath());
+                }
+                if (filePath!=null && !filePath.exists()) {
                     if(!filePath.mkdirs()) {
                         Log.d("update", "create dirs failed."+filePath);
                         return;
                     }
                 }
 
-                long contentLength = response.body().contentLength();
-                byte[] buffer = new byte[1024];
+                float contentLength = response.body().contentLength();
+                byte[] buffer = new byte[1024*10];
                 File file = new File(filePath.getCanonicalPath(), fileName);
                 try (InputStream is = response.body().byteStream();
                      FileOutputStream fos = new FileOutputStream(file)) {
 
                     int length;
-                    long sum = 0;
+                    float sum = 0f;
                     while ((length = is.read(buffer)) != -1) {
                         fos.write(buffer, 0, length);
                         sum += length;
-                        int progress = (int) (sum * 1.0f / contentLength * 100);
+                        int progress = (int) (sum / contentLength * 100);
                         callback.onProgress(progress);
                     }
                     fos.flush();
