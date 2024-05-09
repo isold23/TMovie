@@ -205,8 +205,8 @@ public class MainActivity extends AppCompatActivity {
                 //return mWebView.getWebScrollY() > 0;
             }
         });
-        request_permissions();
-
+        //request_permissions();
+        appUpdate.update(MainActivity.this);
     }
 
     @Override
@@ -327,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-    */
+
 
     private void request_permissions() {
         List<String> permissionList = new ArrayList<>();
@@ -366,4 +366,5 @@ public class MainActivity extends AppCompatActivity {
             appUpdate.update(MainActivity.this);
         }
     }
+      */
 }
