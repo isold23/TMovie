@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 import com.melon.tmovie.MainActivity;
+import com.melon.tmovie.R;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +17,7 @@ public class UpdateService {
     private static OkHttpClient okHttpClient;
 
     public static void download(Context context, final String fileName, final UpdateCallback callback) {
-        String url = "http://tv.hzdianyue.com/app/" + fileName;
+        String url = "http://"+ context.getString(R.string.domain) + "/app/" + fileName;
         Request request = new Request.Builder()
                 .addHeader("Accept-Encoding", "identity")
                 .url(url).build();

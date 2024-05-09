@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TMovie</string>
+    <string name="domain">tv.hzdianyue.com</string>
 </resources>

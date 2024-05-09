@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
+import com.melon.tmovie.R;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -25,11 +26,12 @@ import java.io.StringReader;
  */
 
 public class APPConfig {
-    private String config_url = "http://tv.hzdianyue.com/app/config.xml";
+    private String config_url = "";
     public ConfigInfo latestConfigInfo = new ConfigInfo();
     public ConfigInfo currentConfigInfo = new ConfigInfo();
 
     public void init(Context context) {
+        config_url = "http://" +  context.getString(R.string.domain) + "/app/config.xml";
         getLatestConfig();
         getCurrentConfig(context);
     }
